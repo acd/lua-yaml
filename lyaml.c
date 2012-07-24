@@ -410,7 +410,7 @@ static int dump_scalar(struct lua_yaml_dumper *dumper) {
    }
 
    r = yaml_scalar_event_initialize(&ev, NULL, tag, (unsigned char *)str,
-                                     len, 1, 1, style)) {
+                                     len, 1, 1, style);
 
    if (is_binary)
       lua_pop(dumper->L, 1);
