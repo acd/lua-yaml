@@ -1,7 +1,7 @@
 /*
  * lyaml.c, LibYAML binding for Lua
  * 
- * Copyright (c) 2009, Andrew Danforth <acd@weirdness.net>
+ * Copyright (c) 2009-2012, Andrew Danforth <acd@weirdness.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -365,7 +365,7 @@ static int l_load(lua_State *L) {
 static int dump_node(struct lua_yaml_dumper *dumper);
 
 static int is_binary_string(const unsigned char *str, size_t len) {
-   // this could be optimized to examine an entire word in each loop iteration
+   /* this could be optimized to examine an entire word in each loop iteration */
    while (len-- > 0) {
      if (*str++ & 0x80) return 1;
    }
