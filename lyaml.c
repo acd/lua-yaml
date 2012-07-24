@@ -383,8 +383,8 @@ static int dump_scalar(struct lua_yaml_dumper *dumper) {
 
    if (type == LUA_TSTRING) {
       str = lua_tolstring(dumper->L, -1, &len);
-      if ((len == 4 && (!strcmp(str, "true"))
-         || (len == 5 && !strcmp(str, "false")))
+      if ((len == 4 && !strcmp(str, "true"))
+         || (len == 5 && !strcmp(str, "false"))
          || (len == 1 && str[0] == '~')) {
          style = YAML_SINGLE_QUOTED_SCALAR_STYLE;
       } else if ((is_binary = is_binary_string((const unsigned char *)str, len))) {
