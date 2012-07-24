@@ -379,7 +379,7 @@ static int dump_scalar(struct lua_yaml_dumper *dumper) {
    yaml_char_t *tag = NULL;
    yaml_event_t ev;
    yaml_scalar_style_t style = YAML_ANY_SCALAR_STYLE;
-   int is_binary = 0;
+   int r, is_binary = 0;
 
    if (type == LUA_TSTRING) {
       str = lua_tolstring(dumper->L, -1, &len);
@@ -409,13 +409,14 @@ static int dump_scalar(struct lua_yaml_dumper *dumper) {
       }
    }
 
-   if (!yaml_scalar_event_initialize(&ev, NULL, tag, (unsigned char *)str,
+   r = yaml_scalar_event_initialize(&ev, NULL, tag, (unsigned char *)str,
                                      len, 1, 1, style)) {
-      return 0;
-   }
 
    if (is_binary)
       lua_pop(dumper->L, 1);
+
+   if (!r)
+      return 0;
 
    return yaml_emitter_emit(&dumper->emitter, &ev);
 }
