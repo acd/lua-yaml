@@ -378,22 +378,23 @@ static int dump_scalar(struct lua_yaml_dumper *dumper) {
    const char *str = NULL;
    yaml_char_t *tag = NULL;
    yaml_event_t ev;
-   yaml_scalar_style_t style = YAML_PLAIN_SCALAR_STYLE;
+   yaml_scalar_style_t style = YAML_ANY_SCALAR_STYLE;
    int is_binary = 0;
 
    if (type == LUA_TSTRING) {
       str = lua_tolstring(dumper->L, -1, &len);
-      if (len <= 5 && (!strcmp(str, "true")
-         || !strcmp(str, "false")
-         || !strcmp(str, "~"))) {
-         style = YAML_SINGLE_QUOTED_SCALAR_STYLE;
-      } else if (lua_isnumber(dumper->L, -1)) {
-         /* string is convertible to number, quote it to preserve type */
+      if ((len == 4 && (!strcmp(str, "true"))
+         || (len == 5 && !strcmp(str, "false")))
+         || (len == 1 && str[0] == '~')) {
          style = YAML_SINGLE_QUOTED_SCALAR_STYLE;
       } else if ((is_binary = is_binary_string((const unsigned char *)str, len))) {
          tobase64(dumper->L, -1);
          str = lua_tolstring(dumper->L, -1, &len);
          tag = (yaml_char_t *) LUAYAML_TAG_PREFIX "binary";
+         style = YAML_PLAIN_SCALAR_STYLE;
+      } else if (lua_isnumber(dumper->L, -1)) {
+         /* string is convertible to number, quote it to preserve type */
+         style = YAML_SINGLE_QUOTED_SCALAR_STYLE;
       }
    } else if (type == LUA_TNUMBER) {
       /* have Lua convert number to a string */
@@ -408,10 +409,14 @@ static int dump_scalar(struct lua_yaml_dumper *dumper) {
       }
    }
 
-   yaml_scalar_event_initialize(
-      &ev, NULL, tag, (unsigned char *)str, len,
-      !is_binary, !is_binary, style);
-   if (is_binary) lua_pop(dumper->L, 1);
+   if (!yaml_scalar_event_initialize(&ev, NULL, tag, (unsigned char *)str,
+                                     len, 1, 1, style)) {
+      return 0;
+   }
+
+   if (is_binary)
+      lua_pop(dumper->L, 1);
+
    return yaml_emitter_emit(&dumper->emitter, &ev);
 }
 
