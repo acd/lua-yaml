@@ -10,11 +10,17 @@ LUA_DIR=$(PREFIX)/share/lua/5.1
 LUAINC=$(PREFIX)/include
 LUALIB=$(PREFIX)/lib
 
+UNAME=$(shell uname)
+_Linux_cflags=-fPIC
+_Darwin_cflags=
+_Linux_ldflags=-shared
+_Darwin_ldflags=-undefined dynamic_lookup -dynamiclib
+
 CC=gcc
 # -fexceptions is necessary if your Lua was built with a C++ compiler and 
 # uses exceptions internally; can be removed
-CFLAGS=-O2 -Wall $(INC) -shared -fPIC -fexceptions
-LDFLAGS=-shared -L$(LUALIB)
+CFLAGS=-O2 -Wall $(INC) -fexceptions $(_$(UNAME)_cflags)
+LDFLAGS=-shared -L$(LUALIB) $(_$(UNAME)_ldflags)
 INC=-I$(LUAINC)
 
 OBJS=lyaml.o api.o dumper.o emitter.o loader.o parser.o reader.o scanner.o writer.o b64.o
