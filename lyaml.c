@@ -44,6 +44,12 @@
 #define luaL_openlib(L, libname, l, nup) luaL_newlib(L, l)
 #endif
 
+/* fix compilation with Visual C++ /TC */
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#define inline __inline
+#endif
+
 /* configurable flags */
 static char Dump_Auto_Array = 1;
 static char Dump_Error_on_Unsupported = 0;
