@@ -36,6 +36,20 @@
 #include "yaml.h"
 #include "b64.h"
 
+/* fix compilation for Lua 5.2 */
+#if LUA_VERSION_NUM==502
+#define lua_strlen lua_rawlen
+#define luaL_getn lua_rawlen
+#define luaL_reg luaL_Reg
+#define luaL_openlib(L, libname, l, nup) luaL_newlib(L, l)
+#endif
+
+/* fix compilation with Visual C++ /TC */
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#define inline __inline
+#endif
+
 /* configurable flags */
 static char Dump_Auto_Array = 1;
 static char Dump_Error_on_Unsupported = 0;
